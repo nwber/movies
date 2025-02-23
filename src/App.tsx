@@ -13,7 +13,7 @@ async function fetchTrendingMovies(){
     method: 'GET',
     headers: {
       accept: 'application/json',
-      Authorization: `Bearer ${import.meta.env.TMDB_TOKEN}`
+      Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`
     }
   };
   
@@ -27,7 +27,7 @@ async function fetchMovieDetails(movieId: number){
     method: 'GET',
     headers: {
       accept: 'application/json',
-      Authorization: `Bearer ${import.meta.env.TMDB_TOKEN}`
+      Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`
     }
   };
   
