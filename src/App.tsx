@@ -1,33 +1,88 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
+interface Movie {
+  id: number;
+  title: string;
+  overview: string;
+  vote_average: number;
+}
+
+interface MovieDetails {
+  id: number;
+  homepage: string;
+  imdb_id: string;
+  adult: boolean;
+}
+
+async function fetchTrendingMovies(){
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`
+    }
+  };
+  
+  const response = await fetch('https://api.themoviedb.org/3/trending/movie/day?language=en-US', options);
+  const data = await response.json();
+  return data;
+}
+
+async function fetchMovieDetails(movieId: number){
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`
+    }
+  };
+  
+  const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?language=en-US`, options);
+  const data = await response.json();
+  return data;
+}
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [movieData, setMovieData] = useState<{results: Movie[]} | null>(null);
+  const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
+
+  const handleFetchMovies = async () => {
+    const data = await fetchTrendingMovies();
+    setMovieData(data);
+    console.log(data);
+  };
+
+  const handleFetchMovieDetails = async (movieId: number) => {
+    const data = await fetchMovieDetails(movieId);
+    setMovieDetails(data);
+    window.open(data.homepage)
+    console.log(data);
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
+      <h1>Movies!</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+        <button onClick={handleFetchMovies}>
+          Fetch trending movies
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <div className="movie-list">
+          {movieData?.results
+            ?.sort((a: Movie, b: Movie) => b.vote_average - a.vote_average)
+            .slice(0, 5)
+            .map((movie: Movie) => (
+              <div key={movie.id} className="movie-item">
+                <h3>{movie.title}</h3>
+                <p>{movie.overview}</p>
+                <button onClick={() => handleFetchMovieDetails(movie.id)}>
+                  Watch now!
+                </button>
+                <small>Rating: {movie.vote_average.toFixed(1)}/10</small>
+              </div>
+            ))}
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
