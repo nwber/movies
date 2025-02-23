@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { injectSpeedInsights } from '@vercel/speed-insights';
+import { inject } from '@vercel/analytics';
 import './App.css'
 
 interface Movie {
@@ -38,7 +39,8 @@ async function fetchMovieDetails(movieId: number){
 }
 
 function App() {
-  injectSpeedInsights();
+  inject(); 
+  injectSpeedInsights(); 
   const [movieData, setMovieData] = useState<{results: Movie[]} | null>(null);
 
   const handleFetchMovies = async () => {
