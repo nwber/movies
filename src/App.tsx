@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { injectSpeedInsights } from '@vercel/speed-insights';
 import './App.css'
 
 interface Movie {
@@ -37,6 +38,7 @@ async function fetchMovieDetails(movieId: number){
 }
 
 function App() {
+  injectSpeedInsights();
   const [movieData, setMovieData] = useState<{results: Movie[]} | null>(null);
 
   const handleFetchMovies = async () => {
@@ -48,6 +50,7 @@ function App() {
   const handleFetchMovieDetails = async (movieId: number) => {
     const data = await fetchMovieDetails(movieId);
     window.open(data.homepage);
+    console.log(`Redirected to ${data.homepage}.`)
   };
 
   return (
