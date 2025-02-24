@@ -25,6 +25,8 @@ async function fetchTrendingMovies(){
 }
 
 async function fetchMovieDetails(movieId: number){
+  console.log(`fetching movie details for movieId ${movieId}`)
+
   const options = {
     method: 'GET',
     headers: {
@@ -41,6 +43,7 @@ async function fetchMovieDetails(movieId: number){
 function App() {
   inject(); 
   injectSpeedInsights(); 
+
   const [movieData, setMovieData] = useState<{results: Movie[]} | null>(null);
 
   const handleFetchMovies = async () => {
@@ -51,8 +54,15 @@ function App() {
 
   const handleFetchMovieDetails = async (movieId: number) => {
     const data = await fetchMovieDetails(movieId);
-    window.open(data.homepage);
-    console.log(`Redirected to ${data.homepage}.`)
+    
+    if (data.homepage == "") {
+      console.log(`Could not redirect, homepage missing for movieId ${movieId}. See https://developer.themoviedb.org/reference/movie-details for more info.`)
+    }
+    else {
+      window.open(data.homepage);
+      console.log(`Redirected to ${data.homepage}.`)
+    }
+    
   };
 
   return (
@@ -73,6 +83,9 @@ function App() {
                 <button onClick={() => handleFetchMovieDetails(movie.id)}>
                   Watch now!
                 </button>
+                <p>
+
+                </p>
                 <small>Rating: {movie.vote_average.toFixed(1)}/10</small>
               </div>
             ))}
